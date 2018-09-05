@@ -22,13 +22,18 @@
     <Button text="Search!"
             onAction="#onSearchButtonHandle"
             GridPane.columnIndex="3" GridPane.rowIndex="0" GridPane.rowSpan="2"/>
-    <!--<Text fx:id="actionText"
-          GridPane.columnIndex="1" GridPane.rowIndex="2"/>-->
     <TreeView fx:id="resultTree"
               onMouseClicked="#onMouseClickedEvent"
                 GridPane.columnIndex="1" GridPane.rowIndex="2"/>
     <TabPane fx:id="tabPane"
-             GridPane.rowIndex="2" GridPane.columnIndex="2"/>
-   <!-- <TextArea fx:id="resultText" editable="false"
-              GridPane.columnIndex="2" GridPane.rowIndex="2"/>-->
+             GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+    <VBox prefWidth="70" GridPane.columnIndex="3" GridPane.rowIndex="2">
+        <Button text="Next" prefWidth="70"
+                onAction="#onNextButton"/>
+        <Button text="Select all" prefWidth="70"
+                onAction="#onSelectAllButton"/>
+        <Button text="Prev" prefWidth="70"
+                onAction="#onPrevButton"/>
+    </VBox>
+
 </GridPane>

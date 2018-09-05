@@ -17,8 +17,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
-        primaryStage.setTitle("Hello World");
+        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("sample.fxml"));
+        primaryStage.setTitle("Log search");
         primaryStage.setScene(new Scene(root,800,600));
         primaryStage.show();
     }
@@ -26,10 +26,5 @@ public class Main extends Application {
 
     public static void main(String[] args) throws IOException, URISyntaxException {
        launch(args);
-    }
-    private static String readFilename() throws IOException, URISyntaxException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        return reader.readLine();
-
     }
 }

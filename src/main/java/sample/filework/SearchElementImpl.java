@@ -33,13 +33,25 @@ public class SearchElementImpl implements SearchElement {
 
     @Override
     public int getNextFindPosition() {
-        currentPos++;
-        if (currentPos < findPos.size()) {
+        if (currentPos < findPos.size() - 1) {
+            currentPos++;
             return findPos.get(currentPos);
         }
         else {
-            currentPos = -1;
-            return findPos.get(0);
+            currentPos = 0;
+            return findPos.get(currentPos);
+        }
+    }
+
+    @Override
+    public int getPrevFindPosition() {
+        if (currentPos > 0) {
+            currentPos = currentPos - 1;
+            return findPos.get(currentPos);
+        }
+        else {
+            currentPos = findPos.size() - 1;
+            return findPos.get(currentPos);
         }
     }
 

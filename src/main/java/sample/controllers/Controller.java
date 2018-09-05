@@ -9,6 +9,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
+import org.fxmisc.flowless.VirtualizedScrollPane;
+import org.fxmisc.richtext.CodeArea;
 import sample.filework.PathGetter;
 import sample.filework.SearchElement;
 import sample.filework.StringPathGetter;
@@ -33,9 +35,6 @@ public class Controller {
     @FXML
     private TreeView<String> resultTree;
 
-   /* @FXML
-    private TextArea resultText;*/
-
     @FXML
     private TextField extensionField;
 
@@ -47,7 +46,7 @@ public class Controller {
 
     private HashMap<Path,SearchElement> searchResults = new HashMap<>();
 
-    private HashMap<String, Tab> openedTab = new HashMap<>();
+    private HashMap<Path, Tab> openedTab = new HashMap<>();
 
     private Path openFile;
 
@@ -89,35 +88,51 @@ public class Controller {
     }
 
     private void tabOpening() throws IOException {
-        if (!openedTab.containsKey(openFile.toString()))
+        if (!openedTab.containsKey(openFile)) //если такой файл не открыт: создаём новую вкладку
         {
             Tab tab = new Tab();
             tab.setText(openFile.toString());
             tab.setOnClosed(event -> {
-                System.out.print(tab.getText() + " closed");
-                openedTab.remove(tab.getText());
+                openedTab.remove(Paths.get(tab.getText())); //удалить вкладку из мапы открытых вкладок при закрытии
             });
-            TextArea resultText = new TextArea();
-            resultText.setText(FileHelper.readFile(openFile));
+            CodeArea resultText = new CodeArea();
+            resultText.appendText(FileHelper.readFile(openFile));
             int caretPos = searchResults.get(openFile).getNextFindPosition();
-            resultText.positionCaret(caretPos);
+            setCarete(resultText, caretPos);
             resultText.selectRange(caretPos, caretPos + searchField.getText().length());
-            tab.setContent(resultText);
+            VirtualizedScrollPane<CodeArea> area = new VirtualizedScrollPane<>(resultText);
+            tab.setContent(area);
             tabPane.getTabs().add(tab);
             tabPane.getSelectionModel().select(tab);
-            openedTab.put(openFile.toString(),tab);
+            openedTab.put(openFile,tab);
         }
-        else
-        {
-            Tab tab = openedTab.get(openFile.toString());
-            tab.setText(openFile.toString());
-            TextArea resultText = new TextArea();
-            resultText.setText(FileHelper.readFile(openFile));
-            int caretPos = searchResults.get(openFile).getNextFindPosition();
-            resultText.positionCaret(caretPos);
-            resultText.selectRange(caretPos, caretPos + searchField.getText().length());
-            tab.setContent(resultText);
-            tabPane.getSelectionModel().select(tab);
-        }
+    }
+
+    public void onNextButton(ActionEvent actionEvent) {
+        Tab activeTab = tabPane.getSelectionModel().getSelectedItem();
+        VirtualizedScrollPane tabContent = (VirtualizedScrollPane) activeTab.getContent();
+        CodeArea tabText = (CodeArea) tabContent.getContent();
+        int caretPos = searchResults.get(Paths.get(activeTab.getText())).getNextFindPosition();
+        setCarete(tabText, caretPos);
+        tabText.selectRange(caretPos, caretPos + searchField.getText().length());
+        activeTab.setContent(tabContent);
+    }
+
+    public void onSelectAllButton(ActionEvent actionEvent) {
+    }
+
+    public void onPrevButton(ActionEvent actionEvent) {
+        Tab activeTab = tabPane.getSelectionModel().getSelectedItem();
+        VirtualizedScrollPane tabContent = (VirtualizedScrollPane) activeTab.getContent();
+        CodeArea tabText = (CodeArea) tabContent.getContent();
+        int caretPos = searchResults.get(Paths.get(activeTab.getText())).getPrevFindPosition();
+        setCarete(tabText, caretPos);
+        tabText.selectRange(caretPos, caretPos + searchField.getText().length());
+        activeTab.setContent(tabContent);
+    }
+
+    private void setCarete(CodeArea area, int pos) {
+        area.moveTo(pos);
+        area.requestFollowCaret();
     }
 }

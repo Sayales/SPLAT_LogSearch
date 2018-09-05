@@ -10,4 +10,5 @@ public interface SearchElement {
     void addPosition(int position);
     List<Integer> getFindPositions();
     int getNextFindPosition();
+    int getPrevFindPosition();
 }
