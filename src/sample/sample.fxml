@@ -25,7 +25,10 @@
     <!--<Text fx:id="actionText"
           GridPane.columnIndex="1" GridPane.rowIndex="2"/>-->
     <TreeView fx:id="resultTree"
+              onMouseClicked="#onMouseClickedEvent"
                 GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-    <TextArea fx:id="resultText"
-                GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+    <TabPane fx:id="tabPane"
+             GridPane.rowIndex="2" GridPane.columnIndex="2"/>
+   <!-- <TextArea fx:id="resultText" editable="false"
+              GridPane.columnIndex="2" GridPane.rowIndex="2"/>-->
 </GridPane>
