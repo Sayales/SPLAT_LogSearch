@@ -31,11 +31,6 @@ public class Main extends Application {
 
 
     public static void main(String[] args) throws IOException, URISyntaxException {
-        /*PathGetter stringGetter = new StringPathGetter(readFilename());
-        Stream<Path> walkedFilesStream = SearchHelper.searchInFolder(stringGetter.getPath(), "жопа", ".log");
-        String result = walkedFilesStream.map(file -> file.getFileName().toString())
-                .collect(Collectors.joining(" "));
-        System.out.println(result);*/
        launch(args);
     }
     private static String readFilename() throws IOException, URISyntaxException {

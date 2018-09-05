@@ -22,6 +22,10 @@
     <Button text="Search!"
             onAction="#onSearchButtonHandle"
             GridPane.columnIndex="3" GridPane.rowIndex="0" GridPane.rowSpan="2"/>
-    <Text fx:id="actionText"
-          GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+    <!--<Text fx:id="actionText"
+          GridPane.columnIndex="1" GridPane.rowIndex="2"/>-->
+    <TreeView fx:id="resultTree"
+                GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+    <TextArea fx:id="resultText"
+                GridPane.columnIndex="2" GridPane.rowIndex="2"/>
 </GridPane>
