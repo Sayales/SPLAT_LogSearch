@@ -19,7 +19,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("sample.fxml"));
         primaryStage.setTitle("Log search");
-        primaryStage.setScene(new Scene(root,800,600));
+        primaryStage.setScene(new Scene(root,1024,600));
         primaryStage.show();
     }
 

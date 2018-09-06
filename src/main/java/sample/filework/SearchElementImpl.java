@@ -1,6 +1,7 @@
 package sample.filework;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,11 +11,14 @@ import java.util.List;
  */
 public class SearchElementImpl implements SearchElement {
 
+    private Path path;
+
     private int currentPos;
 
     private List<Integer> findPos = new ArrayList<>();
 
-    public SearchElementImpl() {
+    public SearchElementImpl(Path path) {
+        this.path = path;
         currentPos = -1;
     }
 
@@ -55,4 +59,29 @@ public class SearchElementImpl implements SearchElement {
         }
     }
 
+    @Override
+    public Path getPath() {
+        return path;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SearchElementImpl that = (SearchElementImpl) o;
+
+        return path != null ? path.equals(that.path) : that.path == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return path != null ? path.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return path.toString();
+    }
 }

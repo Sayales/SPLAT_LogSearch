@@ -1,10 +1,8 @@
 package sample.controllers;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
@@ -13,19 +11,20 @@ import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import sample.filework.PathGetter;
 import sample.filework.SearchElement;
+
 import sample.filework.StringPathGetter;
 import sample.util.FileHelper;
 import sample.util.SearchHelper;
 
-import java.io.File;
+
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
 
 public class Controller {
 
@@ -44,21 +43,86 @@ public class Controller {
     @FXML
     private TextField searchField;
 
-    private HashMap<Path,SearchElement> searchResults = new HashMap<>();
 
-    private HashMap<Path, Tab> openedTab = new HashMap<>();
+    private Thread searchThread;
 
-    private Path openFile;
+    private HashMap<Path,SearchElement> searchResults = new HashMap<>(); //мапа результатов поиска
+
+    private HashMap<Tab, SearchElement> openedTab = new HashMap<>(); //мапа открытых вкладок
+
+    private SearchElement openFile; //файл, вкладка с которым открыта в данный момент
 
     @FXML
     public void onSearchButtonHandle(ActionEvent actionEvent) throws IOException {
-        PathGetter pathGetter = new StringPathGetter(folderField.getText());
-        searchResults = SearchHelper.searchAllPosInFolder(pathGetter.getPath(),searchField.getText(),extensionField.getText());
-        Set<Path> files = searchResults.keySet();
-        getTreeNodes(pathGetter.getPath(), files);
-        resultTree.setRoot(getTreeNodes(pathGetter.getPath(),files));
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                Platform.runLater(() -> {
+                    PathGetter pathGetter = null;
+                    try {
+                        pathGetter = new StringPathGetter(folderField.getText());
+                    } catch (URISyntaxException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        searchResults = SearchHelper.searchAllPosInFolder(pathGetter.getPath(),searchField.getText(),extensionField.getText());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Set<Path> files = searchResults.keySet();
+                    getTreeNodes(pathGetter.getPath(), files);
+                    resultTree.setRoot(getTreeNodes(pathGetter.getPath(),files));
+                });
+                return null;
+            }
+        };
+        searchThread = new Thread(task);
+        searchThread.start();
     }
 
+    @FXML
+    public void onMouseClickedEvent(MouseEvent event) throws IOException, InterruptedException { //на тестовых файлах - основное время затрачивается на отрисовку текста в треде gui
+        if (searchThread != null) {
+            searchThread.join();
+        }
+        TreeItem<String> clickedItem = resultTree.getSelectionModel().getSelectedItem();
+        if (clickedItem != null) {
+            openFile = searchResults.get(Paths.get(clickedItem.getValue()));
+            if (openFile != null && !Files.isDirectory(openFile.getPath())) {
+                tabOpening();
+            }
+        }
+    }
+
+    @FXML
+    public void onNextButton(ActionEvent actionEvent) {
+        Tab activeTab = tabPane.getSelectionModel().getSelectedItem();
+        VirtualizedScrollPane tabContent = (VirtualizedScrollPane) activeTab.getContent();
+        CodeArea tabText = (CodeArea) tabContent.getContent();
+        int caretPos = openedTab.get(activeTab).getNextFindPosition();
+        setCarete(tabText, caretPos);
+        tabText.selectRange(caretPos, caretPos + searchField.getText().length());
+        activeTab.setContent(tabContent);
+    }
+
+    @FXML
+    public void onSelectAllButton(ActionEvent actionEvent) {
+        Tab activeTab = tabPane.getSelectionModel().getSelectedItem();
+        VirtualizedScrollPane tabContent = (VirtualizedScrollPane) activeTab.getContent();
+        CodeArea tabText = (CodeArea) tabContent.getContent();
+        tabText.selectRange(0,tabText.getLength());
+    }
+
+    @FXML
+    public void onPrevButton(ActionEvent actionEvent) {
+        Tab activeTab = tabPane.getSelectionModel().getSelectedItem();
+        VirtualizedScrollPane tabContent = (VirtualizedScrollPane) activeTab.getContent();
+        CodeArea tabText = (CodeArea) tabContent.getContent();
+        int caretPos = openedTab.get(activeTab).getPrevFindPosition();
+        setCarete(tabText, caretPos);
+        tabText.selectRange(caretPos, caretPos + searchField.getText().length());
+        activeTab.setContent(tabContent);
+    }
 
     private TreeItem<String> getTreeNodes(Path directory, Set<Path> searchResults)  {
         TreeItem<String> root = new TreeItem<>(directory.toString());
@@ -77,58 +141,25 @@ public class Controller {
         return root;
     }
 
-    public void onMouseClickedEvent(MouseEvent event) throws IOException {
-        TreeItem<String> clickedItem = resultTree.getSelectionModel().getSelectedItem();
-        if (clickedItem != null) {
-            openFile = Paths.get(clickedItem.getValue());
-            if (!Files.isDirectory(openFile)) {
-               tabOpening();
-            }
-        }
-    }
-
     private void tabOpening() throws IOException {
-        if (!openedTab.containsKey(openFile)) //если такой файл не открыт: создаём новую вкладку
+        if (!openedTab.containsValue(searchResults.get(openFile.getPath()))) //если такой файл не открыт: создаём новую вкладку
         {
             Tab tab = new Tab();
             tab.setText(openFile.toString());
             tab.setOnClosed(event -> {
-                openedTab.remove(Paths.get(tab.getText())); //удалить вкладку из мапы открытых вкладок при закрытии
+                openedTab.remove(tab); //удалить вкладку из мапы открытых вкладок при закрытии
             });
             CodeArea resultText = new CodeArea();
-            resultText.appendText(FileHelper.readFile(openFile));
-            int caretPos = searchResults.get(openFile).getNextFindPosition();
+            resultText.appendText(FileHelper.readFile(openFile.getPath()));
+            int caretPos = openFile.getNextFindPosition();
             setCarete(resultText, caretPos);
             resultText.selectRange(caretPos, caretPos + searchField.getText().length());
             VirtualizedScrollPane<CodeArea> area = new VirtualizedScrollPane<>(resultText);
             tab.setContent(area);
             tabPane.getTabs().add(tab);
             tabPane.getSelectionModel().select(tab);
-            openedTab.put(openFile,tab);
+            openedTab.put(tab, searchResults.get(openFile.getPath()));
         }
-    }
-
-    public void onNextButton(ActionEvent actionEvent) {
-        Tab activeTab = tabPane.getSelectionModel().getSelectedItem();
-        VirtualizedScrollPane tabContent = (VirtualizedScrollPane) activeTab.getContent();
-        CodeArea tabText = (CodeArea) tabContent.getContent();
-        int caretPos = searchResults.get(Paths.get(activeTab.getText())).getNextFindPosition();
-        setCarete(tabText, caretPos);
-        tabText.selectRange(caretPos, caretPos + searchField.getText().length());
-        activeTab.setContent(tabContent);
-    }
-
-    public void onSelectAllButton(ActionEvent actionEvent) {
-    }
-
-    public void onPrevButton(ActionEvent actionEvent) {
-        Tab activeTab = tabPane.getSelectionModel().getSelectedItem();
-        VirtualizedScrollPane tabContent = (VirtualizedScrollPane) activeTab.getContent();
-        CodeArea tabText = (CodeArea) tabContent.getContent();
-        int caretPos = searchResults.get(Paths.get(activeTab.getText())).getPrevFindPosition();
-        setCarete(tabText, caretPos);
-        tabText.selectRange(caretPos, caretPos + searchField.getText().length());
-        activeTab.setContent(tabContent);
     }
 
     private void setCarete(CodeArea area, int pos) {

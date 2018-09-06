@@ -32,7 +32,7 @@ public class SearchHelper {
         return content.contains(txt);
     }*/
     public static Pair<Path,SearchElement> searchAllPositions(Path file, String txt) {
-        Pair<Path, SearchElement> pairResult = new Pair<>(file, new SearchElementImpl());
+        Pair<Path, SearchElement> pairResult = new Pair<>(file, new SearchElementImpl(file));
         byte[] data = new byte[0];
         try {
             data = Files.readAllBytes(file);

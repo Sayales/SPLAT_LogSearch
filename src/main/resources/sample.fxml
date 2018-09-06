@@ -11,11 +11,15 @@
 
 <?import javafx.scene.text.Text?>
 <GridPane alignment="TOP_CENTER" hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="sample.controllers.Controller">
-    <TextField fx:id="searchField" promptText="Search phrase"
+    <Label text="Search:"
+          GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+    <TextField fx:id="searchField" promptText="Text to search"
         GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.columnSpan="2"/>
+    <Label text="URI:"
+           GridPane.columnIndex="0" GridPane.rowIndex="1"/>
     <TextField fx:id="folderField"
-            promptText="Folder"
-            GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            promptText="file:///D:/test"
+            GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.columnSpan="0"/>
     <TextField fx:id="extensionField"
             text=".log"
                GridPane.columnIndex="2" GridPane.rowIndex="1"/>
@@ -25,7 +29,7 @@
     <TreeView fx:id="resultTree"
               onMouseClicked="#onMouseClickedEvent"
                 GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-    <TabPane fx:id="tabPane"
+    <TabPane fx:id="tabPane" prefWidth="600"
              GridPane.columnIndex="2" GridPane.rowIndex="2"/>
     <VBox prefWidth="70" GridPane.columnIndex="3" GridPane.rowIndex="2">
         <Button text="Next" prefWidth="70"
@@ -35,5 +39,6 @@
         <Button text="Prev" prefWidth="70"
                 onAction="#onPrevButton"/>
     </VBox>
+
 
 </GridPane>

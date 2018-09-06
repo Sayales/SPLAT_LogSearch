@@ -11,4 +11,5 @@ public interface SearchElement {
     List<Integer> getFindPositions();
     int getNextFindPosition();
     int getPrevFindPosition();
+    Path getPath();
 }

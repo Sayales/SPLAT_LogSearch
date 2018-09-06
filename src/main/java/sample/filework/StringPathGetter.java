@@ -1,6 +1,7 @@
 package sample.filework;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -10,8 +11,8 @@ import java.nio.file.Paths;
 public class StringPathGetter implements PathGetter {
     private Path path;
 
-    public StringPathGetter(String uri) {
-        path = Paths.get(uri);
+    public StringPathGetter(String uri) throws URISyntaxException {
+        path = Paths.get(new URI(uri));
     }
 
     @Override
