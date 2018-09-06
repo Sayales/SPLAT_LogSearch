@@ -18,20 +18,7 @@ import java.util.stream.Stream;
  * Created by Pavel on 04.09.2018.
  */
 public class SearchHelper {
-    //TODO: good algorithm instead of mock
-  /*  public static boolean contains(Path file, String txt) {
-        if (Files.isDirectory(file))
-            return false;
-        byte[] data = new byte[0];
-        try {
-            data = Files.readAllBytes(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String content = new String(data, StandardCharsets.UTF_8);
-        return content.contains(txt);
-    }*/
-    public static Pair<Path,SearchElement> searchAllPositions(Path file, String txt) {
+    private static Pair<Path,SearchElement> searchAllPositions(Path file, String txt) {
         Pair<Path, SearchElement> pairResult = new Pair<>(file, new SearchElementImpl(file));
         byte[] data = new byte[0];
         try {
@@ -52,11 +39,6 @@ public class SearchHelper {
         return pairResult;
     }
 
-
-  /*  public static Stream<Path> searchInFolder(Path parentFolder, String content, String extension) throws IOException {
-        return Files.walk(parentFolder)
-                .filter(file ->  SearchHelper.contains(file, content) && (file.toString().endsWith(extension)));
-    }*/
     public static HashMap<Path, SearchElement> searchAllPosInFolder(Path parentFolder, String content, String extension) throws IOException {
         HashMap<Path, SearchElement> result = new HashMap<>();
         Files.walk(parentFolder)
