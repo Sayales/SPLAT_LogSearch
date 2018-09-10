@@ -1,5 +1,6 @@
 package sample;
 
+import com.sun.javafx.stage.StageHelper;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,16 +16,20 @@ import java.net.URISyntaxException;
 
 public class Main extends Application {
 
+    private Stage primaryStage;
+
     @Override
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("sample.fxml"));
         primaryStage.setTitle("Log search");
         primaryStage.setScene(new Scene(root,1024,600));
+
+        this.primaryStage = primaryStage;
         primaryStage.show();
     }
 
 
     public static void main(String[] args) throws IOException, URISyntaxException {
-       launch(args);
+            launch(args);
     }
 }

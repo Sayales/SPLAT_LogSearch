@@ -38,6 +38,7 @@
                 onAction="#onSelectAllButton"/>
         <Button text="Prev" prefWidth="70"
                 onAction="#onPrevButton"/>
+        <Text fx:id="loadLable"/>
     </VBox>
 
 

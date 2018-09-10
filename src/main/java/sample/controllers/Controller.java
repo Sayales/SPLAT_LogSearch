@@ -9,6 +9,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
+import sample.exceptions.LoadException;
 import sample.exceptions.NothingFindException;
 import sample.filework.PathGetter;
 import sample.filework.SearchElement;
@@ -44,6 +45,9 @@ public class Controller {
     @FXML
     private TextField searchField;
 
+    @FXML
+    private Text loadLable;
+
 
     private Thread searchThread;
 
@@ -62,12 +66,18 @@ public class Controller {
                     PathGetter pathGetter = null;
                     try {
                         pathGetter = new StringPathGetter(folderField.getText());
+                        alert(new LoadException("Loading..."));
                         searchResults = SearchHelper.searchAllPosInFolder(pathGetter.getPath(),searchField.getText(),extensionField.getText());
+                        alert(new LoadException("Loaded!"));
                         Set<Path> files = searchResults.keySet();
                         getTreeNodes(pathGetter.getPath(), files);
                         resultTree.setRoot(getTreeNodes(pathGetter.getPath(),files));
+
                     } catch (Exception uriE) {
                         alert(uriE);
+                    }
+                    catch (Error e) {
+                        alertError(e);
                     }
                 });
                 return null;
@@ -178,7 +188,16 @@ public class Controller {
         if (e instanceof NothingFindException)
             alert.setContentText("Nothing was finded");
         else
+        if (e instanceof LoadException)
+            alert.setContentText(e.getMessage());
+        else
             alert.setContentText("Some more troubles " + e.getMessage());
+        alert.getDialogPane().setPrefSize(400, 100);
+        alert.showAndWait();
+    }
+
+    private void alertError(Error e){
+        Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK);
         alert.getDialogPane().setPrefSize(400, 100);
         alert.showAndWait();
     }
