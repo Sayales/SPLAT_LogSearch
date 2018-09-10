@@ -1,6 +1,7 @@
 package sample.util;
 
 import javafx.util.Pair;
+import sample.exceptions.NothingFindException;
 import sample.filework.SearchElement;
 import sample.filework.SearchElementImpl;
 
@@ -39,7 +40,7 @@ public class SearchHelper {
         return pairResult;
     }
 
-    public static HashMap<Path, SearchElement> searchAllPosInFolder(Path parentFolder, String content, String extension) throws IOException {
+    public static HashMap<Path, SearchElement> searchAllPosInFolder(Path parentFolder, String content, String extension) throws IOException, NothingFindException {
         HashMap<Path, SearchElement> result = new HashMap<>();
         Files.walk(parentFolder)
                 .forEach(file -> {
@@ -49,6 +50,9 @@ public class SearchHelper {
                             result.put(e.getKey(), e.getValue());
                     }
                 });
+        if (result.size() == 0) {
+            throw new NothingFindException();
+        }
         return result;
     }
 

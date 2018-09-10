@@ -9,6 +9,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
+import sample.exceptions.NothingFindException;
 import sample.filework.PathGetter;
 import sample.filework.SearchElement;
 
@@ -61,17 +62,13 @@ public class Controller {
                     PathGetter pathGetter = null;
                     try {
                         pathGetter = new StringPathGetter(folderField.getText());
-                    } catch (URISyntaxException e) {
-                        e.printStackTrace();
-                    }
-                    try {
                         searchResults = SearchHelper.searchAllPosInFolder(pathGetter.getPath(),searchField.getText(),extensionField.getText());
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                        Set<Path> files = searchResults.keySet();
+                        getTreeNodes(pathGetter.getPath(), files);
+                        resultTree.setRoot(getTreeNodes(pathGetter.getPath(),files));
+                    } catch (Exception uriE) {
+                        alert(uriE);
                     }
-                    Set<Path> files = searchResults.keySet();
-                    getTreeNodes(pathGetter.getPath(), files);
-                    resultTree.setRoot(getTreeNodes(pathGetter.getPath(),files));
                 });
                 return null;
             }
@@ -165,5 +162,24 @@ public class Controller {
     private void setCarete(CodeArea area, int pos) {
         area.moveTo(pos);
         area.requestFollowCaret();
+    }
+
+    private void alert(Exception e) {
+        Alert alert = new Alert(Alert.AlertType.WARNING, "", ButtonType.OK);
+        if (e instanceof IllegalArgumentException)
+            alert.setContentText("Missing scheme, for example \" file://");
+        else
+        if (e instanceof URISyntaxException)
+            alert.setContentText("URI syntax excecption " + e.getMessage());
+        else
+        if (e instanceof IOException)
+            alert.setContentText("No such directory or file " + e.getMessage());
+        else
+        if (e instanceof NothingFindException)
+            alert.setContentText("Nothing was finded");
+        else
+            alert.setContentText("Some more troubles " + e.getMessage());
+        alert.getDialogPane().setPrefSize(400, 100);
+        alert.showAndWait();
     }
 }

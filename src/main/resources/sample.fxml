@@ -16,10 +16,10 @@
     <TextField fx:id="searchField" promptText="Text to search"
         GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.columnSpan="2"/>
     <Label text="URI:"
-           GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+           GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="1"/>
     <TextField fx:id="folderField"
             promptText="file:///D:/test"
-            GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.columnSpan="0"/>
+            GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.columnSpan="1"/>
     <TextField fx:id="extensionField"
             text=".log"
                GridPane.columnIndex="2" GridPane.rowIndex="1"/>
