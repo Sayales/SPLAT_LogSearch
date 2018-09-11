@@ -12,6 +12,12 @@
             <maven.compiler.source>1.8</maven.compiler.source>
             <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
+    <repositories>
+        <repository>
+            <id>rich-text-fx</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+    </repositories>
     <dependencies>
         <dependency>
             <groupId>org.fxmisc.richtext</groupId>
