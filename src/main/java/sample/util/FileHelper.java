@@ -20,11 +20,11 @@ public class FileHelper {
 
     public static String readFileInPlace(Path file, long offset) throws IOException {
         RandomAccessFile RAFile = new RandomAccessFile(file.toFile(),"r");
-        long eOffsetMinor =  offset - 512;
+        long eOffsetMinor =  offset - 2048;
         if (eOffsetMinor < 0)
             eOffsetMinor = 0;
         RAFile.seek(eOffsetMinor);
-        byte[] data = new byte[1024];
+        byte[] data = new byte[2048];
         RAFile.read(data);
         RAFile.close();
         return new String(data, StandardCharsets.UTF_8);
