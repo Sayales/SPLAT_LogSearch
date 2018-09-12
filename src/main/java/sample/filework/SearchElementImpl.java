@@ -15,7 +15,7 @@ public class SearchElementImpl implements SearchElement {
 
     private int currentPos;
 
-    private List<Integer> findPos = new ArrayList<>();
+    private List<Long> findPos = new ArrayList<>();
 
     public SearchElementImpl(Path path) {
         this.path = path;
@@ -25,18 +25,18 @@ public class SearchElementImpl implements SearchElement {
 
 
     @Override
-    public void addPosition(int position) {
+    public void addPosition(long position) {
         if (position >= 0)
             findPos.add(position);
     }
 
     @Override
-    public List<Integer> getFindPositions() {
+    public List<Long> getFindPositions() {
         return findPos;
     }
 
     @Override
-    public int getNextFindPosition() {
+    public long getNextFindPosition() {
         if (currentPos < findPos.size() - 1) {
             currentPos++;
             return findPos.get(currentPos);
@@ -48,7 +48,7 @@ public class SearchElementImpl implements SearchElement {
     }
 
     @Override
-    public int getPrevFindPosition() {
+    public long getPrevFindPosition() {
         if (currentPos > 0) {
             currentPos = currentPos - 1;
             return findPos.get(currentPos);

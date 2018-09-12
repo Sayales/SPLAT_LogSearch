@@ -101,14 +101,22 @@ public class Controller {
     }
 
     @FXML
-    public void onNextButton(ActionEvent actionEvent) {
+    public void onNextButton(ActionEvent actionEvent) throws IOException {
         Tab activeTab = tabPane.getSelectionModel().getSelectedItem();
         VirtualizedScrollPane tabContent = (VirtualizedScrollPane) activeTab.getContent();
         CodeArea tabText = (CodeArea) tabContent.getContent();
-        int caretPos = openedTab.get(activeTab).getNextFindPosition();
-        setCarete(tabText, caretPos);
-        tabText.selectRange(caretPos, caretPos + searchField.getText().length());
-        activeTab.setContent(tabContent);
+        int caretPosInit = setCarete(tabText, tabText.getCaretPosition());
+        if(caretPosInit == -1) {
+            tabText.clear();
+            tabText.appendText(FileHelper.readFileInPlace(openedTab.get(activeTab).getPath(), openedTab.get(activeTab).getNextFindPosition()));
+            int caretPos = setCarete(tabText);
+            tabText.selectRange(caretPos, caretPos + searchField.getText().length());
+            activeTab.setContent(tabContent);
+        }
+        else {
+            tabText.selectRange(caretPosInit, caretPosInit + searchField.getText().length());
+            activeTab.setContent(tabContent);
+        }
     }
 
     @FXML
@@ -120,12 +128,13 @@ public class Controller {
     }
 
     @FXML
-    public void onPrevButton(ActionEvent actionEvent) {
+    public void onPrevButton(ActionEvent actionEvent) throws IOException {
         Tab activeTab = tabPane.getSelectionModel().getSelectedItem();
         VirtualizedScrollPane tabContent = (VirtualizedScrollPane) activeTab.getContent();
         CodeArea tabText = (CodeArea) tabContent.getContent();
-        int caretPos = openedTab.get(activeTab).getPrevFindPosition();
-        setCarete(tabText, caretPos);
+        tabText.clear();
+        tabText.appendText(FileHelper.readFileInPlace(openedTab.get(activeTab).getPath(),openedTab.get(activeTab).getPrevFindPosition()));
+        int caretPos = setCarete(tabText);
         tabText.selectRange(caretPos, caretPos + searchField.getText().length());
         activeTab.setContent(tabContent);
     }
@@ -156,9 +165,8 @@ public class Controller {
                 openedTab.remove(tab); //удалить вкладку из мапы открытых вкладок при закрытии
             });
             CodeArea resultText = new CodeArea();
-            resultText.appendText(FileHelper.readFile(openFile.getPath()));
-            int caretPos = openFile.getNextFindPosition();
-            setCarete(resultText, caretPos);
+            resultText.appendText(FileHelper.readFileInPlace(openFile.getPath(), openFile.getNextFindPosition()));
+            int caretPos = setCarete(resultText);
             resultText.selectRange(caretPos, caretPos + searchField.getText().length());
             VirtualizedScrollPane<CodeArea> area = new VirtualizedScrollPane<>(resultText);
             tab.setContent(area);
@@ -168,9 +176,22 @@ public class Controller {
         }
     }
 
-    private void setCarete(CodeArea area, int pos) {
+    private int setCarete(CodeArea area, int off) {
+        String areaText = area.getText();
+        int pos = areaText.indexOf(searchField.getText(), off);
+        if (pos >= 0) {
+            area.moveTo(pos);
+            area.requestFollowCaret();
+        }
+        return pos;
+    }
+
+    private int setCarete(CodeArea area) {
+        String areaText = area.getText();
+        int pos = areaText.indexOf(searchField.getText());
         area.moveTo(pos);
         area.requestFollowCaret();
+        return pos;
     }
 
     private void alert(Exception e) {

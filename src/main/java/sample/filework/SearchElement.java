@@ -7,9 +7,9 @@ import java.util.List;
  * Created by Pavel on 05.09.2018.
  */
 public interface SearchElement {
-    void addPosition(int position);
-    List<Integer> getFindPositions();
-    int getNextFindPosition();
-    int getPrevFindPosition();
+    void addPosition(long position);
+    List<Long> getFindPositions();
+    long getNextFindPosition();
+    long getPrevFindPosition();
     Path getPath();
 }
