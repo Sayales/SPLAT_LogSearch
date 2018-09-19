@@ -1,5 +1,6 @@
 package sample.filework;
 
+import java.io.Serializable;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -21,6 +22,8 @@ public class SearchElementImpl implements SearchElement {
         this.path = path;
         currentPos = -1;
     }
+
+
 
 
 

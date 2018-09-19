@@ -6,13 +6,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import sample.filework.SearchElement;
+import sample.filework.SearchElementImpl;
 
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 
 
 public class Main extends Application {
@@ -31,6 +32,11 @@ public class Main extends Application {
 
 
     public static void main(String[] args) throws IOException, URISyntaxException {
+        FileOutputStream fos = new FileOutputStream("fos");
+        ObjectOutputStream out = new ObjectOutputStream(fos);
+        SearchElement el = new SearchElementImpl(Paths.get("fos"));
+        out.writeObject(el);
+
        launch(args);
     }
 }

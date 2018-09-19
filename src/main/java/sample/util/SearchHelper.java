@@ -17,7 +17,7 @@ import java.util.stream.Stream;
  */
 public class SearchHelper {
 
-    private static final long CHUNK_SIZE = 1024;
+    private static final long CHUNK_SIZE = 8192;
 
     public static HashMap<Path, SearchElement> searchAllPosInFolder(Path parentFolder, String content, String extension) throws IOException, NothingFindException {
         HashMap<Path, SearchElement> result = new HashMap<>();
