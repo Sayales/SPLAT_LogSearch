@@ -20,7 +20,7 @@ public class FileHelper {
 
     public static String readFileInPlace(Path file, long offset) throws IOException {
         RandomAccessFile RAFile = new RandomAccessFile(file.toFile(),"r");
-        long eOffsetMinor =  offset - 2048;
+        long eOffsetMinor =  offset - 1024;
         if (eOffsetMinor < 0)
             eOffsetMinor = 0;
         RAFile.seek(eOffsetMinor);

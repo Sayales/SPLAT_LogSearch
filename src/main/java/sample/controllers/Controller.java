@@ -189,8 +189,10 @@ public class Controller {
     private int setCarete(CodeArea area) {
         String areaText = area.getText();
         int pos = areaText.indexOf(searchField.getText());
-        area.moveTo(pos);
-        area.requestFollowCaret();
+        if (pos >= 0) {
+            area.moveTo(pos);
+            area.requestFollowCaret();
+        }
         return pos;
     }
 

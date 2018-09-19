@@ -32,11 +32,6 @@ public class Main extends Application {
 
 
     public static void main(String[] args) throws IOException, URISyntaxException {
-        FileOutputStream fos = new FileOutputStream("fos");
-        ObjectOutputStream out = new ObjectOutputStream(fos);
-        SearchElement el = new SearchElementImpl(Paths.get("fos"));
-        out.writeObject(el);
-
        launch(args);
     }
 }
